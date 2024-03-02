@@ -2,7 +2,7 @@
 // .then(res=>res.json())
 // .then(data=>console.log(data))
 
-const loadPhone = async (searchText='iphone', isShowAll) => {
+const loadPhone = async (searchText = 'iphone', isShowAll) => {
     const res = await fetch(`https://openapi.programming-hero.com/api/phones?search=${searchText}`);
     const data = await res.json();
     const phones = data.data;
@@ -17,9 +17,26 @@ const displayPhones = (phones, isShowAll) => {
     phoneContainer.textContent = '';
     const showAllButton = document.getElementById('show-all-button');
     const searchField = document.getElementById('search-field');
+    const div = document.createElement('div');
 
     if (phones.length > 12 && !isShowAll) {
         showAllButton.classList.remove('hidden');
+    }
+    else if (phones.length === 0) {
+        toggleSpinner(false);
+        showAllButton.classList.add('hidden');
+        div.innerHTML = `
+        <div class="flex justify-center items-center gap-5 w-[160vh] h-[60vh] mx-auto">
+        <div class="badge badge-error gap-2 items-center h-8">
+        <div>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-4 h-4 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </div>
+        <p>error</p>
+        </div>
+        <h2 class="text-3xl font-bold">Item Not Found</h2>
+        </div>
+        `
+        phoneContainer.appendChild(div);
     }
     else {
         showAllButton.classList.add('hidden');
@@ -28,6 +45,7 @@ const displayPhones = (phones, isShowAll) => {
     if (!isShowAll) {
         phones = phones.slice(0, 12);
     }
+
     // else
     // {
     // phones=phones.slice(0,phones.length());
@@ -71,7 +89,12 @@ function handleSearch(isShowAll) {
     const searchField = document.getElementById('search-field');
     const searchText = searchField.value;
     console.log(searchText)
-    loadPhone(searchText, isShowAll);
+    if (searchText === '') {
+        loadPhone('iphone', isShowAll);
+    }
+    else {
+        loadPhone(searchText, isShowAll);
+    }
 }
 
 const spinner = document.getElementById('spinner');
